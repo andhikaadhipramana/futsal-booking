@@ -45,11 +45,11 @@ async function CourtDetailContent({
       <div className="mt-5 grid gap-6 lg:grid-cols-[1.4fr_0.8fr]">
         <section>
           {court.images.length > 0 ? (
-            <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
-              <div className="relative min-h-64 overflow-hidden rounded-2xl bg-slate-100 sm:min-h-[420px]">
+            <figure className="grid gap-3 sm:grid-cols-[1fr_180px]">
+              <div className={`relative min-h-64 overflow-hidden rounded-2xl bg-slate-100 sm:min-h-[420px] ${court.images.length === 1 ? "sm:col-span-2" : ""}`}>
                 <Image
                   src={court.images[0]}
-                  alt={`${court.name} - foto lapangan`}
+                  alt={`Ilustrasi lapangan futsal untuk ${court.name}`}
                   fill
                   priority
                   sizes="(max-width: 768px) 100vw, 65vw"
@@ -62,7 +62,7 @@ async function CourtDetailContent({
                     <div key={image} className="relative min-h-32 overflow-hidden rounded-2xl bg-slate-100 sm:min-h-0">
                       <Image
                         src={image}
-                        alt={`${court.name} - foto ${index + 2}`}
+                        alt={`Ilustrasi tambahan ${index + 1} untuk ${court.name}`}
                         fill
                         sizes="(max-width: 768px) 50vw, 20vw"
                         className="object-cover"
@@ -71,7 +71,8 @@ async function CourtDetailContent({
                   ))}
                 </div>
               )}
-            </div>
+              <figcaption className="text-sm text-slate-600 sm:col-span-2">Foto ilustrasi, bukan foto asli lapangan Beyond.</figcaption>
+            </figure>
           ) : (
             <div className="grid min-h-72 place-items-center rounded-2xl bg-slate-100 text-sm text-slate-500">
               Foto lapangan belum tersedia

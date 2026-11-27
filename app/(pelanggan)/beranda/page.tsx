@@ -1,90 +1,87 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowDown,
   ArrowRight,
+  CalendarDays,
   Clock3,
   MapPin,
   Phone,
-  Quote,
   ShieldCheck,
   Sparkles,
-  Star,
   Trophy,
   Users,
 } from "lucide-react";
 import { CourtCard } from "@/components/court-card";
 import { Button } from "@/components/ui/button";
 import { getCourts } from "@/lib/api";
+import { formatRupiah } from "@/lib/utils";
 import {
   mockBookingSteps,
   mockFacilities,
-  mockTestimonials,
   mockVenue,
 } from "@/data/mock";
 
 const facilityIcons = [Users, MapPin, Sparkles, ShieldCheck];
 
 export default async function BerandaPage() {
-  const courts = await getCourts();
+  const courts = (await getCourts()).filter((court) => court.active);
+  const startingPrice = courts.length > 0
+    ? Math.min(...courts.map((court) => Math.min(court.regularPrice, court.peakPrice)))
+    : null;
 
   return (
     <main>
-      <section className="relative isolate min-h-[620px] overflow-hidden bg-slate-950 text-white sm:min-h-[680px]">
-        <Image
-          src="https://images.unsplash.com/photo-1529900748604-07564a03e7a6?auto=format&fit=crop&w=2000&q=90"
-          alt="Pemain futsal sedang bertanding di lapangan"
-          fill
-          priority
-          sizes="100vw"
-          className="-z-20 object-cover"
-        />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-r from-slate-950/95 via-slate-950/75 to-slate-950/30" />
-        <div className="mx-auto flex min-h-[620px] max-w-6xl items-center px-4 py-16 sm:min-h-[680px]">
-          <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold tracking-wide text-green-200 backdrop-blur sm:text-sm">
-              <MapPin className="h-4 w-4" /> LAPANGAN FUTSAL DI JOMBANG
-            </span>
-            <h1 className="mt-6 text-4xl font-black leading-[1.08] tracking-tight sm:text-6xl">
-              Enjoy your game,
-              <br />
-              <span className="text-green-400">Booking jadi lebih mudah.</span>
-            </h1>
-            <p className="mt-5 max-w-xl text-base leading-7 text-slate-200 sm:text-lg">
-              Cari lapangan, pilih jam, dan siapkan timmu. Semua jadwal
-              lapangan Beyond bisa kamu cek dengan mudah dan praktis.
+      <section className="bg-linear-to-br from-green-950 to-slate-950 text-white">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 sm:py-16 lg:grid-cols-[1fr_0.95fr] lg:gap-12 lg:py-20">
+          <div>
+            <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-green-200 sm:text-sm">
+              <MapPin aria-hidden="true" className="h-4 w-4 text-orange-300" /> {mockVenue.address}
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="h-14 justify-between rounded-xl px-6 text-base">
-                <Link href="/jadwal">
-                  Booking Sekarang <ArrowRight className="h-5 w-5" />
-                </Link>
+            <h1 className="mt-4 max-w-xl text-4xl leading-tight font-black tracking-tight text-balance sm:text-5xl lg:text-6xl">
+              Booking lapangan futsal <span className="text-green-300">indoor di Jombang</span>
+            </h1>
+            <p className="mt-4 max-w-lg leading-7 text-slate-200 sm:text-lg">
+              Lihat pilihan lapangan, bandingkan harga, dan cari jam yang cocok untuk timmu.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+              <Button asChild size="lg" className="bg-green-300 px-6 text-green-950 hover:bg-green-200 focus-visible:ring-green-300 focus-visible:ring-offset-green-950">
+                <Link href="/jadwal"><CalendarDays aria-hidden="true" className="h-5 w-5" /> Cek Jadwal</Link>
               </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="h-14 border-white/30 bg-white/10 px-6 text-white hover:bg-white/20 hover:text-white"
-              >
-                <a href="#lapangan">Lihat Lapangan</a>
-              </Button>
+              <a href="#lapangan" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-green-100 underline-offset-4 hover:underline">
+                Lihat lapangan <ArrowRight aria-hidden="true" className="h-4 w-4" />
+              </a>
             </div>
-            <div className="mt-10 flex flex-wrap gap-x-7 gap-y-3 text-sm font-medium text-slate-200">
-              <span className="inline-flex items-center gap-2">
-                <Trophy className="h-4 w-4 text-orange-400" /> Lapangan berkualitas
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <Clock3 className="h-4 w-4 text-orange-400" /> Jadwal fleksibel
-              </span>
-            </div>
+            <dl className="mt-7 flex flex-wrap gap-x-7 gap-y-4 border-t border-white/20 pt-5 text-sm">
+              {startingPrice !== null && (
+                <div>
+                  <dt className="text-green-200">Harga mulai</dt>
+                  <dd className="mt-1 font-bold">{formatRupiah(startingPrice)}/jam</dd>
+                </div>
+              )}
+              <div>
+                <dt className="inline-flex items-center gap-1.5 text-green-200"><Clock3 aria-hidden="true" className="h-4 w-4" /> Jam operasional</dt>
+                <dd className="mt-1 font-bold">{mockVenue.hours} WIB</dd>
+              </div>
+            </dl>
           </div>
+          <figure className="overflow-hidden rounded-3xl bg-slate-950 ring-1 ring-white/15">
+            <div className="relative aspect-[3/2]">
+              <Image
+                src="/futsal-domo-polideportivo.webp"
+                alt="Tampak lebar lapangan futsal indoor dari tribun Domo Polideportivo di Guatemala"
+                fill
+                preload
+                sizes="(max-width: 1023px) calc(100vw - 2rem), (max-width: 1151px) 45vw, 520px"
+                className="object-contain"
+              />
+            </div>
+            <figcaption className="px-4 py-3 text-xs leading-5 text-slate-300">
+              <span className="block font-semibold text-white">Foto ilustrasi · Domo Polideportivo, Guatemala</span>
+              Foto: <a href="https://commons.wikimedia.org/wiki/File:Futsal_at_Domo_Polideportivo,_Guatemala_City.jpg" className="underline underline-offset-2 hover:text-white">CDAG</a> ·{" "}
+              <a href="https://creativecommons.org/licenses/by/2.0/" className="underline underline-offset-2 hover:text-white">CC BY 2.0</a> · Diubah ukuran dan format
+            </figcaption>
+          </figure>
         </div>
-        <a
-          href="#lapangan"
-          className="absolute bottom-5 left-1/2 hidden -translate-x-1/2 items-center gap-2 text-xs font-semibold text-white/75 sm:flex"
-        >
-          Jelajahi Beyond <ArrowDown className="h-4 w-4" />
-        </a>
       </section>
 
       <section id="lapangan" className="scroll-mt-20 bg-slate-50 px-4 py-16 sm:py-20">
@@ -164,30 +161,6 @@ export default async function BerandaPage() {
           <Button asChild variant="secondary" size="lg" className="mt-8 h-13">
             <Link href="/jadwal">Cek Jadwal Lapangan <ArrowRight className="h-4 w-4" /></Link>
           </Button>
-        </div>
-      </section>
-
-      <section className="px-4 py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl">
-          <div className="text-center">
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-green-700">Cerita mereka</p>
-            <h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Kata pemain Beyond</h2>
-          </div>
-          <div className="mt-9 grid gap-4 md:grid-cols-3">
-            {mockTestimonials.map((testimonial) => (
-              <article key={testimonial.name} className="rounded-2xl border border-slate-200 bg-white p-6">
-                <div className="flex gap-1 text-orange-500" aria-label="5 dari 5 bintang">
-                  {Array.from({ length: 5 }, (_, index) => <Star key={index} className="h-4 w-4 fill-current" />)}
-                </div>
-                <Quote className="mt-5 h-6 w-6 text-green-700/40" />
-                <p className="mt-2 min-h-20 leading-7 text-slate-700">&ldquo;{testimonial.quote}&rdquo;</p>
-                <div className="mt-5 border-t border-slate-100 pt-4">
-                  <p className="font-bold">{testimonial.name}</p>
-                  <p className="text-sm text-slate-500">{testimonial.role}</p>
-                </div>
-              </article>
-            ))}
-          </div>
         </div>
       </section>
 

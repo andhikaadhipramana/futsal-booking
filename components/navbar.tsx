@@ -3,18 +3,16 @@
 import Link from "next/link";
 import { Menu, User } from "lucide-react";
 import { useState } from "react";
+import { useDemoAccount } from "@/lib/demo-account";
 import { cn } from "@/lib/utils";
 
-export function Navbar({ admin = false }: { variant?: "guest" | "customer"; admin?: boolean }) {
+export function Navbar({ admin = false }: { admin?: boolean }) {
   const [open, setOpen] = useState(false);
+  const demoAccount = useDemoAccount();
+  const accountHref = demoAccount ? "/akun" : "/login";
+  const accountLabel = demoAccount ? "Akun Saya" : "Masuk";
   const links = admin
-    ? [
-        ["Dashboard", "/admin"],
-        ["Lapangan", "/admin/lapangan"],
-        ["Pesanan", "/admin/pesanan"],
-        ["Jadwal", "/admin/jadwal"],
-        ["Laporan", "/admin/laporan"],
-      ]
+    ? [["Dashboard", "/admin"]]
     : [
         ["Beranda", "/beranda"],
         ["Lapangan", "/lapangan"],
@@ -36,22 +34,27 @@ export function Navbar({ admin = false }: { variant?: "guest" | "customer"; admi
             </Link>
           ))}
           {!admin && (
-            <Link href="/login" className="ml-2 inline-flex h-10 items-center gap-2 rounded-xl bg-green-700 px-4 text-sm font-bold text-white">
-              <User className="h-4 w-4" /> Masuk
+            <Link href={accountHref} className="ml-2 inline-flex h-10 items-center gap-2 rounded-xl bg-green-700 px-4 text-sm font-bold text-white hover:bg-green-800">
+              <User className="h-4 w-4" aria-hidden="true" /> {accountLabel}
             </Link>
           )}
         </nav>
-        <button type="button" className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 md:hidden" onClick={() => setOpen(!open)} aria-label="Buka menu">
+        <button type="button" className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 md:hidden" onClick={() => setOpen(!open)} aria-label={open ? "Tutup menu" : "Buka menu"} aria-expanded={open} aria-controls="mobile-navigation">
           <Menu className="h-5 w-5" />
         </button>
       </div>
-      <nav className={cn("border-t border-slate-100 px-4 pb-4 md:hidden", open ? "block" : "hidden")}>
+      <nav id="mobile-navigation" className={cn("border-t border-slate-100 px-4 pb-4 md:hidden", open ? "block" : "hidden")}>
         <div className="mx-auto grid max-w-6xl gap-1 pt-3">
           {links.map(([label, href]) => (
             <Link key={href} href={href} onClick={() => setOpen(false)} className="rounded-lg px-3 py-3 text-sm font-semibold hover:bg-slate-100">
               {label}
             </Link>
           ))}
+          {!admin && (
+            <Link href={accountHref} onClick={() => setOpen(false)} className="mt-1 flex items-center gap-2 rounded-xl bg-green-700 px-3 py-3 text-sm font-bold text-white hover:bg-green-800">
+              <User className="h-4 w-4" aria-hidden="true" /> {accountLabel}
+            </Link>
+          )}
         </div>
       </nav>
     </header>

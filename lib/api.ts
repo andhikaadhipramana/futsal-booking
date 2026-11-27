@@ -2,10 +2,9 @@ import {
   mockBookedSlots,
   mockCourts,
   mockOperatingHours,
-  mockOrders,
   mockPeakHours,
 } from "@/data/mock";
-import type { BookingOrder, Court, TimeSlot } from "@/types";
+import type { Court, TimeSlot } from "@/types";
 
 const wait = (ms = 350) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -17,11 +16,6 @@ export async function getCourts(): Promise<Court[]> {
 export async function getCourtById(id: string): Promise<Court | null> {
   await wait();
   return mockCourts.find((court) => court.id === id) ?? null;
-}
-
-export async function getOrders(): Promise<BookingOrder[]> {
-  await wait();
-  return mockOrders;
 }
 
 export async function getCourtAvailability(

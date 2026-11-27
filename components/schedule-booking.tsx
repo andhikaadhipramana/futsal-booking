@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { CalendarDays, Check, Clock3, Info, MapPin, RotateCcw } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, CalendarDays, Clock3, Info, MapPin, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { SlotButton } from "@/components/slot-button";
 import { Button } from "@/components/ui/button";
 import { getCourtAvailability } from "@/lib/api";
-import { formatRupiah } from "@/lib/utils";
+import { formatBookingDate, getSlotEndTime, matchesAvailableSlots, saveDemoDraft } from "@/lib/demo-booking";
 import { getPricingHourLabels } from "@/lib/pricing";
+import { cn, formatRupiah } from "@/lib/utils";
 import type { Court, TimeSlot } from "@/types";
 
 function getLocalDateValue() {
@@ -15,15 +17,6 @@ function getLocalDateValue() {
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
   return `${now.getFullYear()}-${month}-${day}`;
-}
-
-function formatSelectedDate(value: string) {
-  return new Intl.DateTimeFormat("id-ID", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(new Date(`${value}T00:00:00`));
 }
 
 export function ScheduleBooking({
@@ -34,6 +27,7 @@ export function ScheduleBooking({
   initialCourtId?: string;
 }) {
   const pricingHours = getPricingHourLabels();
+  const router = useRouter();
   const [date, setDate] = useState(getLocalDateValue);
   const [courtId, setCourtId] = useState(
     initialCourtId ?? courts[0]?.id ?? "",
@@ -52,6 +46,7 @@ export function ScheduleBooking({
     [slots, selectedIds],
   );
   const total = selectedSlots.reduce((sum, slot) => sum + slot.price, 0);
+  const hasSelection = selectedSlots.length > 0 && !loading && !loadError;
 
   useEffect(() => {
     let active = true;
@@ -128,14 +123,25 @@ export function ScheduleBooking({
   }
 
   function continueBooking() {
-    if (!selectedCourt || selectedSlots.length === 0) {
-      toast.error("Pilih lapangan dan minimal satu jam terlebih dahulu.");
+    if (!selectedCourt || !hasSelection) return;
+
+    const draft = {
+      courtId: selectedCourt.id,
+      courtName: selectedCourt.name,
+      date,
+      slots: selectedSlots.map(({ id, time, price }) => ({ id, time, price })),
+    };
+    if (!matchesAvailableSlots(draft, slots)) {
+      toast.warning("Jadwal berubah. Hapus pilihan dan pilih kembali slot yang berurutan.");
       return;
     }
 
-    toast.success("Pilihan jadwal tersimpan.", {
-      description: "Ringkasan ini siap dilanjutkan ke checkout pada tahap berikutnya.",
-    });
+    try {
+      saveDemoDraft(draft);
+      router.push("/checkout");
+    } catch {
+      toast.error("Pilihan tidak bisa disimpan di tab ini. Periksa pengaturan browser.");
+    }
   }
 
   function resetSelection() {
@@ -143,7 +149,7 @@ export function ScheduleBooking({
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:py-12">
+    <div className={cn("mx-auto max-w-6xl px-4 py-8 sm:py-12", hasSelection && "max-lg:pb-[calc(7rem+env(safe-area-inset-bottom))]")}>
       <div className="mb-8 max-w-2xl">
         <p className="text-sm font-bold uppercase tracking-[0.16em] text-green-700">Jadwal lapangan</p>
         <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Pilih waktu bermainmu</h1>
@@ -208,7 +214,7 @@ export function ScheduleBooking({
                 <div>
                   <h2 className="text-lg font-black">{selectedCourt?.name}</h2>
                   <p className="mt-1 text-sm text-slate-500">
-                    {date ? formatSelectedDate(date) : "Pilih tanggal"} · Jam operasional {pricingHours.operating}
+                    {date ? formatBookingDate(date) : "Pilih tanggal"} · Jam operasional {pricingHours.operating}
                   </p>
                 </div>
                 <span className="inline-flex w-fit items-center gap-1 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-800">
@@ -262,9 +268,9 @@ export function ScheduleBooking({
               )}
             </section>
 
-            <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
+            <aside aria-labelledby="ringkasan-booking-title" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-black">Ringkasan booking</h2>
+                <h2 id="ringkasan-booking-title" className="text-lg font-black">Ringkasan booking</h2>
                 {selectedSlots.length > 0 && (
                   <button
                     type="button"
@@ -282,7 +288,7 @@ export function ScheduleBooking({
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-slate-500">Tanggal</span>
-                  <span className="text-right font-semibold">{date ? formatSelectedDate(date) : "-"}</span>
+                  <span className="text-right font-semibold">{date ? formatBookingDate(date) : "-"}</span>
                 </div>
                 <div className="flex justify-between gap-3">
                   <span className="text-slate-500">Durasi</span>
@@ -295,7 +301,7 @@ export function ScheduleBooking({
                   <div className="mt-2 flex flex-wrap gap-2">
                     {selectedSlots.map((slot) => (
                       <span key={slot.id} className="rounded-lg bg-green-50 px-2.5 py-1.5 text-xs font-bold text-green-800">
-                        {slot.time}–{String(Number(slot.time.slice(0, 2)) + 1).padStart(2, "0")}.00
+                        {slot.time}–{getSlotEndTime(slot.time)}
                       </span>
                     ))}
                   </div>
@@ -308,18 +314,32 @@ export function ScheduleBooking({
                 <span className="text-xl font-black text-green-800">{formatRupiah(total)}</span>
               </div>
               <Button
+                type="button"
                 className="w-full"
                 size="lg"
-                disabled={selectedSlots.length === 0 || loading || Boolean(loadError)}
+                disabled={!hasSelection}
                 onClick={continueBooking}
               >
-                <Check className="h-4 w-4" /> Simpan pilihan jadwal
+                Tinjau Pesanan <ArrowRight aria-hidden="true" className="h-4 w-4" />
               </Button>
               <p className="mt-3 text-center text-xs leading-5 text-slate-500">
-                Belum ada pembayaran. Checkout akan dilanjutkan pada tahap berikutnya.
+                Mode simulasi. Pilihan ini tidak membuat reservasi atau pembayaran.
               </p>
             </aside>
           </div>
+          {hasSelection && (
+            <div className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white shadow-[0_-6px_24px_rgba(15,23,42,0.08)] lg:hidden">
+              <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+                <div role="status">
+                  <p className="text-xs font-semibold text-slate-600">{selectedSlots.length} jam dipilih</p>
+                  <p className="text-base font-black text-green-800">{formatRupiah(total)}</p>
+                </div>
+                <Button type="button" onClick={continueBooking}>
+                  Tinjau Pesanan <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

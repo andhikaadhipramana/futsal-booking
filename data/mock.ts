@@ -1,4 +1,4 @@
-import type { BookingOrder, Court } from "@/types";
+import type { Court } from "@/types";
 
 export const mockCourts: Court[] = [
   {
@@ -50,29 +50,6 @@ export const mockPeakHours = {
   endsBefore: 22,
 };
 
-export const mockOrders: BookingOrder[] = [
-  {
-    id: "BYD-2601",
-    courtName: "Lapangan A",
-    date: "24 November 2026",
-    slots: ["18.00", "19.00"],
-    customerName: "Andi Pratama",
-    phone: "085760098321",
-    total: 200000,
-    status: "menunggu_pembayaran",
-  },
-  {
-    id: "BYD-2598",
-    courtName: "Lapangan B",
-    date: "20 November 2026",
-    slots: ["20.00"],
-    customerName: "Andi Pratama",
-    phone: "081776665541",
-    total: 240000,
-    status: "dibayar",
-  },
-];
-
 export const mockFacilities = [
   { title: "Ruang ganti nyaman", description: "Bersiap sebelum dan setelah pertandingan." },
   { title: "Parkir luas", description: "Area parkir untuk motor dan mobil." },
@@ -83,26 +60,8 @@ export const mockFacilities = [
 export const mockBookingSteps = [
   { number: "01", title: "Pilih lapangan", description: "Tentukan lapangan yang cocok untuk tim kamu." },
   { number: "02", title: "Pilih jadwal", description: "Cek tanggal dan jam yang masih tersedia." },
-  { number: "03", title: "Isi data pemesan", description: "Masukkan nama dan nomor WhatsApp aktif." },
-  { number: "04", title: "Konfirmasi booking", description: "Selesaikan langkah booking dan simpan kode pesanan." },
-];
-
-export const mockTestimonials = [
-  {
-    name: "Rizky A.",
-    role: "Pemain tim futsal Al-Hilal",
-    quote: "Lapangan bersih dan jadwalnya gampang dicek. Booking bareng teman jadi lebih praktis.",
-  },
-  {
-    name: "Dimas P.",
-    role: "Kapten tim futsal Squadra",
-    quote: "Fasilitasnya lengkap, tempatnya nyaman, dan enak buat main rutin mingguan.",
-  },
-  {
-    name: "Fajar S.",
-    role: "Pemain tim futsal Bintang Timur",
-    quote: "Pilihan jamnya fleksibel. Tinggal pilih waktu yang cocok untuk satu tim.",
-  },
+  { number: "03", title: "Tinjau pesanan", description: "Periksa lapangan, jam bermain, dan total harga." },
+  { number: "04", title: "Konfirmasi demo", description: "Lihat kode pesanan simulasi di Pesanan Saya. Tidak ada reservasi atau pembayaran." },
 ];
 
 export const mockVenue = {

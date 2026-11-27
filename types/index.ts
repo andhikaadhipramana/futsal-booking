@@ -11,28 +11,11 @@ export type Court = {
   active: boolean;
 };
 
-export type SlotStatus = "available" | "booked" | "selected" | "expired";
+type SlotStatus = "available" | "booked" | "selected" | "expired";
 
 export type TimeSlot = {
   id: string;
   time: string;
   status: SlotStatus;
   price: number;
-};
-
-export type OrderStatus =
-  | "menunggu_pembayaran"
-  | "dibayar"
-  | "dibatalkan"
-  | "selesai";
-
-export type BookingOrder = {
-  id: string;
-  courtName: string;
-  date: string;
-  slots: string[];
-  customerName: string;
-  phone: string;
-  total: number;
-  status: OrderStatus;
 };

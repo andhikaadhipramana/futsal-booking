@@ -1,6 +1,7 @@
 "use client";
 
 import type { TimeSlot } from "@/types";
+import { getSlotEndTime } from "@/lib/demo-booking";
 import { cn, formatRupiah } from "@/lib/utils";
 
 export function SlotButton({
@@ -26,7 +27,7 @@ export function SlotButton({
       disabled={disabled}
       onClick={() => onSelect(slot)}
       aria-pressed={slot.status === "selected"}
-      aria-label={`${slot.time} sampai ${String(Number(slot.time.slice(0, 2)) + 1).padStart(2, "0")}:00, ${statusLabel}, ${formatRupiah(slot.price)}`}
+      aria-label={`${slot.time} sampai ${getSlotEndTime(slot.time)}, ${statusLabel}, ${formatRupiah(slot.price)}`}
       className={cn(
         "min-h-[76px] rounded-xl border px-2 py-2 text-center text-sm font-bold transition",
         slot.status === "available" && "border-green-200 bg-green-50 text-green-800 hover:border-green-400 hover:bg-green-100",

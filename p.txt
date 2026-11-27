@@ -1,0 +1,5 @@
+pertama nek kate ngoding bukak terminal, nek wes jalan bukak cline, sek jalakno web booking iiki,
+ngene ta jare koled, sek moco sek mariki tak kongkone ngoding live
+koled plenger loh iku aku dewe cok seng garap duk koled
+suwon, i mu pie seh lek gawe ai awmu, iki nek gak mok aktif no cline gak mlaku, contoh
+yo nyocot tok ngunu gak ngoding live, makane gawe codex, password melbu dashboard e 123456 ojo diganti soale karo digawe kahim, awakmu gawe iki cepet tasakkrepmu, marekno bookingmu iki teros sambungno nang bot wa mau, booking mu iki sediakno api  key, wes aku tak ados
