@@ -14,6 +14,7 @@ import {
 import { CourtCard } from "@/components/court-card";
 import { Button } from "@/components/ui/button";
 import { getCourts } from "@/lib/api";
+import { getPricingHourLabels } from "@/lib/pricing";
 import { formatRupiah } from "@/lib/utils";
 import {
   mockBookingSteps,
@@ -25,6 +26,12 @@ const facilityIcons = [Users, MapPin, Sparkles, ShieldCheck];
 
 export default async function BerandaPage() {
   const courts = (await getCourts()).filter((court) => court.active);
+  const pricingHours = getPricingHourLabels();
+  const questions = [
+    { question: "Kapan tarif jam ramai berlaku?", answer: `Tarif jam ramai berlaku pukul ${pricingHours.peak} WIB. Tarif normal berlaku pukul ${pricingHours.regular} WIB.` },
+    { question: "Apakah konfirmasi demo menahan slot?", answer: "Tidak. Kode pesanan demo hanya tersimpan di tab ini dan tidak menahan slot atau memproses pembayaran." },
+    { question: "Bisakah saya membuat reservasi sungguhan dari website ini?", answer: "Belum. Jadwal dan pemesanan di website ini masih simulasi. Jangan gunakan kode demo sebagai bukti reservasi." },
+  ];
   const startingPrice = courts.length > 0
     ? Math.min(...courts.map((court) => Math.min(court.regularPrice, court.peakPrice)))
     : null;
@@ -179,23 +186,36 @@ export default async function BerandaPage() {
               </p>
               <p className="flex items-start gap-3 text-sm leading-6 text-slate-700">
                 <Clock3 className="mt-0.5 h-5 w-5 shrink-0 text-green-700" />
-                <span><strong className="block">Jam operasional</strong>{mockVenue.hours}</span>
+                <span><strong className="block">Jam operasional</strong>{mockVenue.hours} WIB</span>
               </p>
               <p className="flex items-start gap-3 text-sm leading-6 text-slate-700">
                 <Phone className="mt-0.5 h-5 w-5 shrink-0 text-green-700" />
-                <span><strong className="block">Hubungi kami</strong>{mockVenue.phone}</span>
+                <span><strong className="block">Kontak</strong>Nomor resmi belum tersedia di situs ini.</span>
               </p>
             </div>
           </div>
-          <div className="h-72 overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 sm:h-96">
-            <iframe
-              title="Peta lokasi lapangan futsal di Jombang"
-              src={mockVenue.mapUrl}
-              className="h-full w-full border-0"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-            />
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+            <MapPin aria-hidden="true" className="h-7 w-7 text-green-700" />
+            <h3 className="mt-4 text-xl font-black">Lihat area Ploso</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Pin resmi Beyond belum tersedia. Tautan ini membuka peta area Ploso, bukan petunjuk arah ke lapangan.</p>
+            <Button asChild variant="outline" className="mt-5">
+              <a href={mockVenue.areaMapUrl}>Buka peta area <ArrowRight aria-hidden="true" className="h-4 w-4" /></a>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" aria-labelledby="faq-title" className="scroll-mt-20 px-4 py-14 sm:py-16">
+        <div className="mx-auto max-w-3xl">
+          <p className="text-sm font-bold uppercase tracking-[0.16em] text-green-700">Bantuan</p>
+          <h2 id="faq-title" className="mt-2 text-3xl font-black tracking-tight">Pertanyaan umum</h2>
+          <div className="mt-6 space-y-3">
+            {questions.map(({ question, answer }) => (
+              <details key={question} className="rounded-xl border border-slate-200 px-4">
+                <summary className="cursor-pointer py-4 font-bold text-slate-900">{question}</summary>
+                <p className="pb-4 text-sm leading-6 text-slate-600">{answer}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>
@@ -210,9 +230,9 @@ export default async function BerandaPage() {
             <Link href="/lapangan" className="hover:text-white">Lapangan</Link>
             <Link href="/jadwal" className="hover:text-white">Jadwal</Link>
             <a href="#lokasi" className="hover:text-white">Lokasi</a>
+            <a href="#faq" className="hover:text-white">FAQ</a>
           </div>
           <div className="text-sm text-slate-400">
-            <p>Kontak: {mockVenue.phone}</p>
             <p className="mt-1">© {new Date().getFullYear()} Beyond Futsal</p>
           </div>
         </div>

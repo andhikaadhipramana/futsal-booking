@@ -31,6 +31,14 @@ export function matchesAvailableSlots(draft: BookingDetails, availability: TimeS
   });
 }
 
+export function getRestorableSlotIds(ids: string[], availability: TimeSlot[]) {
+  const remaining = availability.filter((slot) => ids.includes(slot.id) && slot.status === "available");
+  const firstIndex = availability.findIndex((slot) => slot.id === remaining[0]?.id);
+  return remaining.every((slot, offset) => availability[firstIndex + offset]?.id === slot.id)
+    ? remaining.map((slot) => slot.id)
+    : [];
+}
+
 export function confirmDemoDraft(draft: BookingDetails) {
   const state = readDemoBookings();
   if (!state.draft || JSON.stringify(state.draft) !== JSON.stringify(draft)) return null;
@@ -43,11 +51,12 @@ export function confirmDemoDraft(draft: BookingDetails) {
 
 export function formatBookingDate(date: string) {
   return new Intl.DateTimeFormat("id-ID", {
+    timeZone: "Asia/Jakarta",
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
-  }).format(new Date(`${date}T00:00:00`));
+  }).format(new Date(`${date}T00:00:00+07:00`));
 }
 
 export function getSlotEndTime(time: string) {

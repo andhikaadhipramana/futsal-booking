@@ -19,7 +19,7 @@ function BookingSummary({ booking }: { booking: BookingDetails }) {
     <dl className="grid gap-4 text-sm sm:grid-cols-2">
       <div><dt className="text-slate-600">Lapangan</dt><dd className="font-bold">{booking.courtName}</dd></div>
       <div><dt className="text-slate-600">Tanggal</dt><dd className="font-bold">{formatBookingDate(booking.date)}</dd></div>
-      <div><dt className="text-slate-600">Jam bermain</dt><dd className="font-bold">{start}–{end} ({booking.slots.length} jam)</dd></div>
+      <div><dt className="text-slate-600">Jam bermain</dt><dd className="font-bold">{start}–{end} WIB ({booking.slots.length} jam)</dd></div>
       <div><dt className="text-slate-600">Total simulasi</dt><dd className="text-lg font-black text-green-800">{formatRupiah(total)}</dd></div>
     </dl>
   );
@@ -110,7 +110,7 @@ export function DemoBookingPanel({ mode }: { mode: "checkout" | "orders" }) {
           {confirming ? "Memeriksa jadwal…" : "Konfirmasi Pesanan Demo"}
         </Button>
         {confirming ? null : (
-          <Button asChild variant="outline"><Link href={`/jadwal?courtId=${encodeURIComponent(draft.courtId)}`}>Kembali ke Jadwal</Link></Button>
+          <Button asChild variant="outline"><Link href={`/jadwal?courtId=${encodeURIComponent(draft.courtId)}&restore=1`}>Kembali ke Jadwal</Link></Button>
         )}
       </div>
     </section>

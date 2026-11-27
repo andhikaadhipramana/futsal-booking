@@ -7,28 +7,24 @@ import { toast } from "sonner";
 import { SlotButton } from "@/components/slot-button";
 import { Button } from "@/components/ui/button";
 import { getCourtAvailability } from "@/lib/api";
-import { formatBookingDate, getSlotEndTime, matchesAvailableSlots, saveDemoDraft } from "@/lib/demo-booking";
+import { formatBookingDate, getRestorableSlotIds, getSlotEndTime, matchesAvailableSlots, readDemoBookings, saveDemoDraft } from "@/lib/demo-booking";
 import { getPricingHourLabels } from "@/lib/pricing";
 import { cn, formatRupiah } from "@/lib/utils";
+import { getVenueDate } from "@/lib/venue-time";
 import type { Court, TimeSlot } from "@/types";
-
-function getLocalDateValue() {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${now.getFullYear()}-${month}-${day}`;
-}
 
 export function ScheduleBooking({
   courts,
   initialCourtId,
+  restoreDraft,
 }: {
   courts: Court[];
   initialCourtId?: string;
+  restoreDraft: boolean;
 }) {
   const pricingHours = getPricingHourLabels();
   const router = useRouter();
-  const [date, setDate] = useState(getLocalDateValue);
+  const [date, setDate] = useState("");
   const [courtId, setCourtId] = useState(
     initialCourtId ?? courts[0]?.id ?? "",
   );
@@ -40,13 +36,35 @@ export function ScheduleBooking({
 
   const selectedCourt = courts.find((court) => court.id === courtId);
   const requestKey = `${courtId}:${date}:${reloadKey}`;
-  const loading = Boolean(courtId && date && loadedKey !== requestKey);
+  const loading = Boolean(courtId && (!date || loadedKey !== requestKey));
   const selectedSlots = useMemo(
     () => slots.filter((slot) => selectedIds.includes(slot.id)),
     [slots, selectedIds],
   );
   const total = selectedSlots.reduce((sum, slot) => sum + slot.price, 0);
   const hasSelection = selectedSlots.length > 0 && !loading && !loadError;
+
+  useEffect(() => {
+    let active = true;
+    Promise.resolve().then(() => {
+      if (!active) return;
+      const today = getVenueDate();
+      try {
+        const draft = restoreDraft ? readDemoBookings().draft : null;
+        if (draft && draft.date >= today && (!initialCourtId || draft.courtId === initialCourtId) && courts.some((court) => court.id === draft.courtId)) {
+          setCourtId(draft.courtId);
+          setDate(draft.date);
+          setSelectedIds(draft.slots.map((slot) => slot.id));
+          return;
+        }
+        if (draft) toast.info("Pilihan sebelumnya sudah tidak berlaku. Silakan pilih jadwal baru.");
+      } catch {
+        toast.info("Pilihan sebelumnya tidak bisa dibaca. Silakan pilih jadwal baru.");
+      }
+      setDate(today);
+    });
+    return () => { active = false; };
+  }, [courts, initialCourtId, restoreDraft]);
 
   useEffect(() => {
     let active = true;
@@ -57,11 +75,7 @@ export function ScheduleBooking({
         getCourtAvailability(courtId, date)
           .then((result) => {
             if (!active) return;
-            setSelectedIds((current) =>
-              current.filter((id) =>
-                result.some((slot) => slot.id === id && slot.status === "available"),
-              ),
-            );
+            setSelectedIds((current) => getRestorableSlotIds(current, result));
             setSlots(result);
             setLoadError("");
             setLoadedKey(requestKey);
@@ -174,10 +188,11 @@ export function ScheduleBooking({
               <input
                 type="date"
                 value={date}
-                min={getLocalDateValue()}
+                min={date ? getVenueDate() : undefined}
+                disabled={!date}
                 onChange={(event) => {
                   if (!event.target.value) return;
-                  if (event.target.value < getLocalDateValue()) {
+                  if (event.target.value < getVenueDate()) {
                     toast.error("Tanggal booking tidak boleh sudah lewat.");
                     return;
                   }
@@ -214,7 +229,7 @@ export function ScheduleBooking({
                 <div>
                   <h2 className="text-lg font-black">{selectedCourt?.name}</h2>
                   <p className="mt-1 text-sm text-slate-500">
-                    {date ? formatBookingDate(date) : "Pilih tanggal"} · Jam operasional {pricingHours.operating}
+                    {date ? formatBookingDate(date) : "Pilih tanggal"} · Jam operasional {pricingHours.operating} WIB
                   </p>
                 </div>
                 <span className="inline-flex w-fit items-center gap-1 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-800">

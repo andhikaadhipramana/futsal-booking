@@ -66,7 +66,6 @@ export const mockBookingSteps = [
 
 export const mockVenue = {
   address: "Ploso, Jombang, Jawa Timur",
-  phone: "0812-5276-9641",
   hours: `Setiap hari, ${String(mockOperatingHours.opensAt).padStart(2, "0")}.00–${String(mockOperatingHours.closesAt).padStart(2, "0")}.00`,
-  mapUrl: "https://www.google.com/maps?q=lapangan+futsal+Jombang+Jawa+Timur&output=embed",
+  areaMapUrl: "https://www.google.com/maps/search/?api=1&query=Ploso%2C+Jombang%2C+Jawa+Timur",
 };

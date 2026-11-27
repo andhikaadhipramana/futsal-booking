@@ -4,6 +4,7 @@ import {
   mockOperatingHours,
   mockPeakHours,
 } from "@/data/mock";
+import { hasVenueSlotStarted } from "@/lib/venue-time";
 import type { Court, TimeSlot } from "@/types";
 
 const wait = (ms = 350) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -36,7 +37,7 @@ export async function getCourtAvailability(
     const hour = index + mockOperatingHours.opensAt;
     const time = `${String(hour).padStart(2, "0")}:00`;
     const isPeak = hour >= mockPeakHours.startsAt && hour < mockPeakHours.endsBefore;
-    const hasPassed = new Date(`${date}T${time}:00`) <= now;
+    const hasPassed = hasVenueSlotStarted(date, time, now);
 
     return {
       id: `${date}-${courtId}-${time}`,
