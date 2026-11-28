@@ -11,7 +11,7 @@ export default function LoginPage() {
   return (
     <main className="min-h-[calc(100vh-4rem)] bg-slate-50 px-4 py-10 sm:py-16">
       <div className="mx-auto max-w-md">
-        <Link href="/beranda" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-green-700">
+        <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-green-700">
           <ArrowLeft className="h-4 w-4" /> Kembali ke beranda
         </Link>
         <section className="mt-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">

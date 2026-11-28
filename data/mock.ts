@@ -11,10 +11,8 @@ export const mockCourts: Court[] = [
     description:
       "Lapangan Indoor menggunakan lantai vinyl anti-slip dengan kipas angin untuk kenyamanan bermain.",
     facilities: ["Indoor", "Kipas Angin", "Ruang ganti", "Parkir luas"],
-    images: [
-      "https://images.unsplash.com/photo-1793929590042-06dbc8fdda46?auto=format&fit=crop&w=1400&q=85",
-      "https://images.unsplash.com/photo-1760174053338-4def27153cb7?auto=format&fit=crop&w=1200&q=85",
-    ],
+    images: ["/lapangan-a.jpg"],
+    coverPosition: "50% 42%",
     active: true,
   },
   {
@@ -27,10 +25,8 @@ export const mockCourts: Court[] = [
     description:
       "Lapangan indoor menggunakan lantai vinyl anti-slip dengan kipas angin untuk kenyamanan bermain.",
     facilities: ["Indoor", "Kipas Angin", "Ruang ganti", "Parkir luas"],
-    images: [
-      "https://images.unsplash.com/photo-1760174053338-4def27153cb7?auto=format&fit=crop&w=1400&q=85",
-      "https://images.unsplash.com/photo-1793929590042-06dbc8fdda46?auto=format&fit=crop&w=1200&q=85",
-    ],
+    images: ["/lapangan-b.jpg"],
+    coverPosition: "50% 66%",
     active: true,
   },
 ];
@@ -54,18 +50,11 @@ export const mockFacilities = [
   { title: "Ruang ganti nyaman", description: "Bersiap sebelum dan setelah pertandingan." },
   { title: "Parkir luas", description: "Area parkir untuk motor dan mobil." },
   { title: "Pencahayaan terang", description: "Tetap nyaman bermain hingga malam." },
-  { title: "Kantin", description: "Minuman dan camilan tersedia di lokasi." },
+  { title: "Lapangan", description: "Lapangan yang kita miliki menggunakan standar internasional dan kualitas tinggi." },
 ];
 
 export const mockBookingSteps = [
-  { number: "01", title: "Pilih lapangan", description: "Tentukan lapangan yang cocok untuk tim kamu." },
-  { number: "02", title: "Pilih jadwal", description: "Cek tanggal dan jam yang masih tersedia." },
-  { number: "03", title: "Tinjau pesanan", description: "Periksa lapangan, jam bermain, dan total harga." },
-  { number: "04", title: "Konfirmasi demo", description: "Lihat kode pesanan simulasi di Pesanan Saya. Tidak ada reservasi atau pembayaran." },
+  { number: "01", title: "Pilih lapangan dan jam", description: "Buka jadwal untuk menentukan tanggal dan jam yang ingin kamu tanyakan." },
+  { number: "02", title: "Tanya via WhatsApp", description: "Kirim detail pilihanmu ke nomor resmi Beyond Futsal." },
+  { number: "03", title: "Tunggu konfirmasi pengelola", description: "Pesan WhatsApp belum menahan slot. Pastikan pengelola sudah mengonfirmasi jadwal sebelum datang." },
 ];
-
-export const mockVenue = {
-  address: "Ploso, Jombang, Jawa Timur",
-  hours: `Setiap hari, ${String(mockOperatingHours.opensAt).padStart(2, "0")}.00–${String(mockOperatingHours.closesAt).padStart(2, "0")}.00`,
-  areaMapUrl: "https://www.google.com/maps/search/?api=1&query=Ploso%2C+Jombang%2C+Jawa+Timur",
-};

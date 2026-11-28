@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CalendarDays, Clock3, Info, MapPin, RotateCcw } from "lucide-react";
+import { ArrowRight, CalendarDays, Clock3, Info, MapPin, MessageCircle, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { SlotButton } from "@/components/slot-button";
 import { Button } from "@/components/ui/button";
+import { getVenueWhatsAppUrl } from "@/data/venue";
 import { getCourtAvailability } from "@/lib/api";
 import { formatBookingDate, getRestorableSlotIds, getSlotEndTime, matchesAvailableSlots, readDemoBookings, saveDemoDraft } from "@/lib/demo-booking";
 import { getPricingHourLabels } from "@/lib/pricing";
@@ -43,6 +44,11 @@ export function ScheduleBooking({
   );
   const total = selectedSlots.reduce((sum, slot) => sum + slot.price, 0);
   const hasSelection = selectedSlots.length > 0 && !loading && !loadError;
+  const whatsappUrl = getVenueWhatsAppUrl(hasSelection && selectedCourt ? {
+    court: selectedCourt.name,
+    date: formatBookingDate(date),
+    time: selectedSlots.map(({ time }) => `${time}–${getSlotEndTime(time)}`).join(", "),
+  } : undefined);
 
   useEffect(() => {
     let active = true;
@@ -169,6 +175,9 @@ export function ScheduleBooking({
         <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Pilih waktu bermainmu</h1>
         <p className="mt-3 leading-7 text-slate-600">
           Pilih tanggal dan lapangan, lalu tandai satu atau beberapa jam berurutan.
+        </p>
+        <p className="mt-3 text-sm leading-6 text-slate-600">
+          Ketersediaan di website ini masih simulasi. Tanyakan ketersediaan sebenarnya ke pengelola lewat WhatsApp.
         </p>
       </div>
 
@@ -325,20 +334,25 @@ export function ScheduleBooking({
                 )}
               </div>
               <div className="flex items-center justify-between py-4">
-                <span className="font-bold">Total</span>
+                <span className="font-bold">Total simulasi</span>
                 <span className="text-xl font-black text-green-800">{formatRupiah(total)}</span>
               </div>
+              <Button asChild size="lg" className="w-full">
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle aria-hidden="true" className="h-4 w-4" /> Tanya Jadwal via WhatsApp
+                </a>
+              </Button>
               <Button
                 type="button"
-                className="w-full"
-                size="lg"
+                variant="outline"
+                className="mt-3 w-full"
                 disabled={!hasSelection}
                 onClick={continueBooking}
               >
-                Tinjau Pesanan <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                Coba Booking Demo <ArrowRight aria-hidden="true" className="h-4 w-4" />
               </Button>
               <p className="mt-3 text-center text-xs leading-5 text-slate-500">
-                Mode simulasi. Pilihan ini tidak membuat reservasi atau pembayaran.
+                Mengirim pesan belum berarti slot dipesan. Booking demo tidak menahan slot atau memproses pembayaran.
               </p>
             </aside>
           </div>
@@ -349,8 +363,10 @@ export function ScheduleBooking({
                   <p className="text-xs font-semibold text-slate-600">{selectedSlots.length} jam dipilih</p>
                   <p className="text-base font-black text-green-800">{formatRupiah(total)}</p>
                 </div>
-                <Button type="button" onClick={continueBooking}>
-                  Tinjau Pesanan <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                <Button asChild>
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                    <MessageCircle aria-hidden="true" className="h-4 w-4" /> Tanya via WhatsApp
+                  </a>
                 </Button>
               </div>
             </div>

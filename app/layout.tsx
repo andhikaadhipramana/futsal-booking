@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { venue } from "@/data/venue";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -9,8 +10,9 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(venue.websiteUrl),
   title: "Beyond Futsal",
-  description: "Booking lapangan futsal online di Jombang",
+  description: "Lihat lapangan futsal indoor Beyond di Ploso, Jombang, dan tanyakan ketersediaan melalui WhatsApp resmi.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

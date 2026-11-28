@@ -12,12 +12,16 @@ export function CourtCard({ court }: { court: Court }) {
 
   return (
     <article className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
-      <div className="relative grid aspect-[16/9] place-items-center bg-green-950 text-green-200">
+      <div className="relative grid aspect-[4/3] place-items-center bg-green-950 text-green-200 sm:aspect-[3/2]">
         {cover ? (
-          <>
-            <Image src={cover} alt={`Ilustrasi untuk ${court.name}`} fill className="object-cover" sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1023px) 50vw, 360px" />
-            <span className="absolute right-3 bottom-3 rounded-full bg-slate-950/85 px-2.5 py-1 text-xs font-semibold text-white">Foto ilustrasi</span>
-          </>
+          <Image
+            src={cover}
+            alt={`Foto ${court.name} Beyond Futsal`}
+            fill
+            className="object-cover"
+            style={court.coverPosition ? { objectPosition: court.coverPosition } : undefined}
+            sizes="(max-width: 639px) calc(100vw - 2rem), (max-width: 1151px) calc(50vw - 1.625rem), 550px"
+          />
         ) : (
           <div className="text-center text-sm">
             <Trophy aria-hidden="true" className="mx-auto mb-2 h-6 w-6" /> Foto belum tersedia

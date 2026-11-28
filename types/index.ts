@@ -8,6 +8,7 @@ export type Court = {
   description: string;
   facilities: string[];
   images: string[];
+  coverPosition?: string;
   active: boolean;
 };
 
